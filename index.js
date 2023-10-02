@@ -86,4 +86,4 @@ app.post('/clientes/add',(req,res)=>{
         res.json('Cliente registrado correctamente')
     })
 });
-//  HASTA AQUI FUNCIONA FUNCIONA!!! 2-10-2023 16:45
+//  HASTA AQUI FUNCIONA FUNCIONA!!! 2-10-2023 16:45dsa
