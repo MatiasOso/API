@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
+const cli = require('nodemon/lib/cli')
 
 const app = express();
 
@@ -12,8 +13,7 @@ const connection = mysql.createConnection({
     host:'db4free.net',
     database:'djangodb4oso',
     user:'matioso',
-    password:'Protonmail.cl', //1ncpssword
-
+    password:'Protonmail.cl',
 });
 
 app.listen(PORT, () => {
@@ -87,3 +87,81 @@ app.post('/clientes/add',(req,res)=>{
     })
 });
 //  HASTA AQUI FUNCIONA FUNCIONA!!! 2-10-2023 16:45dsa
+
+// RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO
+// RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO
+// RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO
+// RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO
+// RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO
+
+// Primer paso, ver si puedo mostrar los resultados de los usuarios registrados en la DB
+
+app.get('/usuarios',(req,res)=>{
+    const query = `SELECT * FROM djangodb4oso.Usuario`
+    connection.query(query,(error,resultado) => {
+        if (error) return console.log(error.message)
+        const obj={}
+        if (resultado.length > 0){
+            obj.listaclientes = resultado
+            res.json(obj)
+        }else{
+            res.json('No hay usuarios registrados')
+        }
+    })
+});
+
+
+app.get('/recetas',(req,res)=>{
+    const query = `SELECT * FROM djangodb4oso.Receta`
+    connection.query(query,(error,resultado) => {
+        if (error) return console.log(error.message)
+        const obj={}
+        if (resultado.length > 0){
+            obj.listarecetas = resultado
+            res.json(obj)
+        }else{
+            res.json('No hay recetas detectadas')
+        }
+    })
+});
+
+
+// Post recetas el cual debe pedir ----> Categoria,Nombre,Ingredientes,Preparacion, Calificacion, Autor
+
+app.post('/recetas/add',(req,res)=>{
+    const receta = {
+        // id: 7,
+        categoria: req.body.categoria,
+        nombre: req.body.nombre,
+        ingredientes: req.body.ingredientes,
+        preparacion: req.body.preparacion,
+        calificacion: req.body.calificacion,
+        autor: req.body.autor
+    }
+    const query = `INSERT INTO djangodb4oso.Receta(categoria,nombre,ingredientes,preparacion,calificacion,autor) values (?,?,?,?,?,?)`
+
+    // Revisar si es que el id del autor existe
+    const query2 = `SELECT * FROM djangodb4oso.Usuario where id = ${receta.autor};`
+    connection.query(query2,(error,resultado) => {
+        if (error) return console.log(error.message)
+        
+        if (resultado.length > 0){
+            console.log('Autor encontrado en el registro')
+            res.json(resultado)
+            connection.query(query, [
+                receta.categoria,
+                receta.nombre,
+                receta.ingredientes,
+                receta.preparacion,
+                receta.calificacion,
+                receta.autor
+            ], (error) => {
+                if(error) return console.error(error.message)
+                res.json('Receta registrada correctamente')
+            })
+        }else{
+            res.json('No se encuentra el autor en el registro')
+        }
+    })
+}
+);
