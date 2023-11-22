@@ -85,7 +85,12 @@ app.post('/clientes/add',(req,res)=>{
         if(error) return console.error(error.message)
         res.json('Cliente registrado correctamente')
     })
+
+    
 });
+
+
+
 
 
 // RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO
@@ -140,6 +145,9 @@ app.post('/recetas/add', (req, res) => {
         calificacion: req.body.calificacion,
         autor: req.body.autor
     }
+    // Probé con req.body y con req.params  y no me funciona ninguno de los dos, los entrega null/undefined
+    // quizas req.query????
+    //YA SOLUCIONADO ERA EN FORMATO JSON LA WEA DE POSTMAN :p
 
     console.log(receta); // Verifica los datos recibidos pero me los está entregando como undefined
 

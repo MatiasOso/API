@@ -1,4 +1,4 @@
-Clone tihs repository
+Clone this repository
 
 #Requirements
 INSTALL NODE ----> https://nodejs.org/es (18.18.0 LTS)
