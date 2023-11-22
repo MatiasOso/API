@@ -86,7 +86,7 @@ app.post('/clientes/add',(req,res)=>{
         res.json('Cliente registrado correctamente')
     })
 });
-//  HASTA AQUI FUNCIONA FUNCIONA!!! 2-10-2023 16:45dsa
+
 
 // RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO
 // RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO RECETAS DE DON OSO
@@ -127,8 +127,10 @@ app.get('/recetas',(req,res)=>{
 
 
 // Post recetas el cual debe pedir ----> Categoria,Nombre,Ingredientes,Preparacion, Calificacion, Autor
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post('/recetas/add',(req,res)=>{
+app.post('/recetas/add', (req, res) => {
     const receta = {
         // id: 7,
         categoria: req.body.categoria,
@@ -138,30 +140,38 @@ app.post('/recetas/add',(req,res)=>{
         calificacion: req.body.calificacion,
         autor: req.body.autor
     }
-    const query = `INSERT INTO djangodb4oso.Receta(categoria,nombre,ingredientes,preparacion,calificacion,autor) values (?,?,?,?,?,?)`
 
-    // Revisar si es que el id del autor existe
-    const query2 = `SELECT * FROM djangodb4oso.Usuario where id = ${receta.autor};`
-    connection.query(query2,(error,resultado) => {
+    console.log(receta); // Verifica los datos recibidos pero me los está entregando como undefined
+
+    const query = `INSERT INTO djangodb4oso.Receta(categoria, nombre, ingredientes, preparacion, calificacion, autor) VALUES (?, ?, ?, ?, ?, ?)`;
+
+    connection.query(query, [
+        receta.categoria,
+        receta.nombre,
+        receta.ingredientes,
+        receta.preparacion,
+        receta.calificacion,
+        receta.autor
+    ], (error) => {
+        if(error) return console.error(error.message)
+        res.json('Receta registrada correctamente')
+    }) 
+});
+
+// Ver receta personalizada
+app.get('/recetas/:id',(req,res)=>{
+    const {id} = req.params
+
+    const query = `SELECT * FROM djangodb4oso.Receta where id = ${id};`
+    connection.query(query,(error,resultado) => {
         if (error) return console.log(error.message)
         
         if (resultado.length > 0){
-            console.log('Autor encontrado en el registro')
+            console.log('Receta encontrada en el registro')
             res.json(resultado)
-            connection.query(query, [
-                receta.categoria,
-                receta.nombre,
-                receta.ingredientes,
-                receta.preparacion,
-                receta.calificacion,
-                receta.autor
-            ], (error) => {
-                if(error) return console.error(error.message)
-                res.json('Receta registrada correctamente')
-            })
         }else{
-            res.json('No se encuentra el autor en el registro')
+            res.json('No se encuentra la receta en el registro')
         }
     })
-}
-);
+});
+// Funciona (Y)
