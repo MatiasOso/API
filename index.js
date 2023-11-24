@@ -115,6 +115,27 @@ app.get('/usuarios',(req,res)=>{
     })
 });
 
+app.post('/usuarios/add',(req,res)=>{
+    const usuario = {
+        // id: 7,
+        Nombre: req.body.Nombre,
+        Password: req.body.Password,
+        Email: req.body.Email
+    }
+
+    const query = `INSERT INTO djangodb4oso.Usuario(Nombre,Password,Email) values (?,?,?)`
+
+    connection.query(query, [
+        usuario.Nombre,
+        usuario.Password,
+        usuario.Email
+    ], (error) => {
+        if(error) return console.error(error.message)
+        res.json('Usuario registrado correctamente')
+    })
+
+});
+
 
 app.get('/recetas',(req,res)=>{
     const query = `SELECT * FROM djangodb4oso.Receta`
@@ -130,6 +151,20 @@ app.get('/recetas',(req,res)=>{
     })
 });
 
+// imagenes
+app.get('/imagenes',(req,res)=>{
+    const query = `SELECT * FROM djangodb4oso.url_imgs`
+    connection.query(query,(error,resultado) => {
+        if (error) return console.log(error.message)
+        const obj={}
+        if (resultado.length > 0){
+            obj.listarecetas = resultado
+            res.json(obj)
+        }else{
+            res.json('No hay recetas detectadas')
+        }
+    })
+});
 
 // Post recetas el cual debe pedir ----> Categoria,Nombre,Ingredientes,Preparacion, Calificacion, Autor
 app.use(bodyParser.json());
@@ -182,4 +217,51 @@ app.get('/recetas/:id',(req,res)=>{
         }
     })
 });
+
+// COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS
+// COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS
+// COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS
+// COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS
+// COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS
+// COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS
+
+// Mostrar comentarios de una receta
+app.get('/recetas/comentarios/:id',(req,res)=>{
+    const {id} = req.params
+
+    const query = `SELECT * FROM djangodb4oso.Comentario where Receta_ID = ${id};`
+    connection.query(query,(error,resultado) => {
+        if (error) return console.log(error.message)
+        
+        if (resultado.length > 0){
+            console.log('Comentario encontrado en el registro')
+            res.json(resultado)
+        }else{
+            res.json('No se encuentra el comentario en el registro')
+        }
+    })
+}
+);
 // Funciona (Y)
+
+app.post('/recetas/comentarios/add', (req, res) => {
+    const comentario = {
+        // id: 7,
+        Usuario: req.body.Usuario,
+        Receta_ID: req.body.Receta_ID,
+        comentario: req.body.comentario
+    }
+    console.log(comentario); 
+
+    const query = `INSERT INTO djangodb4oso.Comentario(Usuario, Receta_ID,Comentario ) VALUES (?, ?, ?)`;
+
+    connection.query(query, [
+        comentario.Usuario,
+        comentario.Receta_ID,
+        comentario.comentario
+    ], (error) => {
+        if(error) return console.error(error.message)
+        res.json('Comentario registrado correctamente')
+    }) 
+}
+);
