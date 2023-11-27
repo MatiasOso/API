@@ -1,7 +1,9 @@
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
-const cli = require('nodemon/lib/cli')
+const cli = require('nodemon/lib/cli');
+const req = require('express/lib/request');
+const res = require('express/lib/response');
 
 const app = express();
 
@@ -158,13 +160,22 @@ app.get('/imagenes',(req,res)=>{
         if (error) return console.log(error.message)
         const obj={}
         if (resultado.length > 0){
-            obj.listarecetas = resultado
+            obj.listaimg = resultado
             res.json(obj)
         }else{
             res.json('No hay recetas detectadas')
         }
     })
 });
+
+app.get('/imagenes/add',(req,res)=>{
+    const query = `INSERT INTO djangodb4oso.url_imgs(IMG,Receta_ID,Description) values (?,?,?)`
+    connection.query(query,(error) => {
+        if (error) return console.log(error.message)
+        res.json('Imagen agregada correctamente')
+    })
+});
+
 
 // Post recetas el cual debe pedir ----> Categoria,Nombre,Ingredientes,Preparacion, Calificacion, Autor
 app.use(bodyParser.json());
