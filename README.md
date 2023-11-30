@@ -10,4 +10,4 @@ npm install body-parser --save
 npm install nodemon --save-dev
 
 
-npm run dev
+npm run dev // npm run start:index o totem para iniciar el servidor
