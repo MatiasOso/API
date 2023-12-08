@@ -229,6 +229,19 @@ app.get('/recetas/:id',(req,res)=>{
     })
 });
 
+app.get('/categorias', (req, res) => {
+    const query = `SELECT DISTINCT categoria FROM djangodb4oso.Receta`;
+    connection.query(query, (error, resultado) => {
+        if (error) return console.log(error.message);
+        if (resultado.length > 0) {
+            const categorias = resultado.map(item => item.categoria);
+            res.json({ categorias });
+        } else {
+            res.json('No hay categorías disponibles');
+        }
+    });
+});
+
 // COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS
 // COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS
 // COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS

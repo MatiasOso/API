@@ -42,3 +42,19 @@ app.get('/user',(req,res)=>{
         }
     })
 });
+
+app.get('/hora', (req, res) => {
+    const query = `SELECT * FROM dbosomens.Horario`;
+    connection.query(query, (error, resultado) => {
+        if (error) return console.log(error.message);
+        const obj = {};
+        if (resultado.length > 0) {
+            obj.listaHorarios = resultado;
+            res.json(obj);
+        } else {
+            res.json('No hay Horarios registrados');
+        }
+    });
+});
+
+
