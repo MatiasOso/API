@@ -103,6 +103,12 @@ app.post('/clientes/add',(req,res)=>{
 
 // Primer paso, ver si puedo mostrar los resultados de los usuarios registrados en la DB
 
+
+// Usuarios
+// Usuarios
+// Usuarios
+// Usuarios
+// Usuarios
 app.get('/usuarios',(req,res)=>{
     const query = `SELECT * FROM djangodb4oso.Usuario`
     connection.query(query,(error,resultado) => {
@@ -117,26 +123,72 @@ app.get('/usuarios',(req,res)=>{
     })
 });
 
-app.post('/usuarios/add',(req,res)=>{
+app.post('/usuarios/add', (req, res) => {
     const usuario = {
-        // id: 7,
         Nombre: req.body.Nombre,
         Password: req.body.Password,
         Email: req.body.Email
     }
 
-    const query = `INSERT INTO djangodb4oso.Usuario(Nombre,Password,Email) values (?,?,?)`
+    const query = `INSERT INTO djangodb4oso.Usuario(Nombre, Password, Email) VALUES (?, ?, ?)`;
 
     connection.query(query, [
         usuario.Nombre,
         usuario.Password,
         usuario.Email
-    ], (error) => {
-        if(error) return console.error(error.message)
-        res.json('Usuario registrado correctamente')
-    })
-
+    ], (error, results, fields) => {
+        if (error) {
+            console.error('Error al insertar usuario:', error);
+            res.status(500).json('Error al registrar usuario');
+        } else {
+            console.log('Query:', query);
+            console.log('Usuario registrado correctamente');
+            res.json('Usuario registrado correctamente');
+        }
+    });
 });
+
+
+app.delete('/usuarios/:id', (req, res) => {
+    const userId = req.params.id;
+    const query = 'DELETE FROM djangodb4oso.Usuario WHERE ID = ?';
+
+    connection.query(query, [userId], (error, resultado) => {
+        if (error) {
+            res.status(500).json({ message: "Error al eliminar el usuario" });
+        } else {
+            if (resultado.affectedRows > 0) {
+                res.json({ message: "Usuario eliminado correctamente" });
+            } else {
+                res.status(404).json({ message: "Usuario no encontrado" });
+            }
+        }
+    });
+});
+
+app.put('/usuarios/:id', (req, res) => {
+    const userId = req.params.id;
+    const { Nombre, Password, Email } = req.body;
+    const query = 'UPDATE djangodb4oso.Usuario SET Nombre = ?, Password = ?, Email = ? WHERE ID = ?';
+
+    connection.query(query, [Nombre, Password, Email, userId], (error, resultado) => {
+        if (error) {
+            res.status(500).json({ message: "Error al editar el usuario" });
+        } else {
+            if (resultado.affectedRows > 0) {
+                res.json({ message: "Usuario editado correctamente" });
+            } else {
+                res.status(404).json({ message: "Usuario no encontrado" });
+            }
+        }
+    });
+});
+
+
+
+
+
+
 
 
 app.get('/recetas',(req,res)=>{
@@ -191,12 +243,7 @@ app.post('/recetas/add', (req, res) => {
         calificacion: req.body.calificacion,
         autor: req.body.autor
     }
-    // Probé con req.body y con req.params  y no me funciona ninguno de los dos, los entrega null/undefined
-    // quizas req.query????
-    //YA SOLUCIONADO ERA EN FORMATO JSON LA WEA DE POSTMAN :p
-
     console.log(receta); // Verifica los datos recibidos pero me los está entregando como undefined
-
     const query = `INSERT INTO djangodb4oso.Receta(categoria, nombre, ingredientes, preparacion, calificacion, autor) VALUES (?, ?, ?, ?, ?, ?)`;
 
     connection.query(query, [
@@ -241,6 +288,43 @@ app.get('/categorias', (req, res) => {
         }
     });
 });
+
+app.get('/recetas/Categoria/:Categoria', (req, res) => {
+    const Categoria = req.params.Categoria;
+    const query = `SELECT * FROM djangodb4oso.Receta WHERE Categoria = ?`;
+    connection.query(query, [Categoria], (error, resultado) => {
+        if (error) return console.log(error.message);
+        if (resultado.length > 0) {
+            res.json(resultado);
+        } else {
+            res.json('No hay recetas para esta categoría');
+        }
+    });
+});
+
+app.get('/buscar', (req, res) => {
+    const Categoria = req.query.Categoria;  // Mantener 'Categoria' con mayúscula
+
+    if (!Categoria) {
+        return res.json('No se proporcionó una categoría para buscar');
+    }
+
+    const query = `SELECT * FROM djangodb4oso.Receta WHERE Categoria = ?`;
+    connection.query(query, [Categoria], (error, resultado) => {
+        if (error) {
+            return res.status(500).json({ message: 'Error al buscar recetas por categoría' });
+        }
+        
+        if (resultado.length > 0) {
+            return res.json(resultado);
+        } else {
+            return res.json('No se encontraron recetas para esta categoría');
+        }
+    });
+});
+
+
+
 
 // COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS
 // COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS COMENTARIOS
