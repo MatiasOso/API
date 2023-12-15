@@ -30,7 +30,7 @@ app.get('/',(req,res) =>{
 });
 
 app.get('/user',(req,res)=>{
-    const query = `SELECT * FROM dbosomens.LoginTest`
+    const query = `SELECT id, User, Password FROM dbosomens.LoginTest` // Agregar 'id' a la consulta
     connection.query(query,(error,resultado) => {
         if (error) return console.log(error.message)
         const obj={}
@@ -42,6 +42,37 @@ app.get('/user',(req,res)=>{
         }
     })
 });
+
+app.get('/email',(req,res) =>{
+    const query = `SELECT id, Email FROM dbosomens.Email`
+    connection.query(query,(error,resultado) =>{
+        if (error) return console.log(error.message)
+        const obj={}
+        if (resultado.length > 0){
+            obj.listaEmails = resultado
+            res.json(obj)
+        }else{
+            res.json('No hay Emails registrados')
+        }
+    })
+});
+
+app.get('/user/:userId/email', (req, res) => {
+    const userId = req.params.userId; // Obtener el ID del usuario desde la URL
+    const query = `SELECT e.id, e.Email FROM dbosomens.Email e JOIN dbosomens.LoginTest u ON e.ID_Usuario = u.id WHERE u.id = ${userId}`;
+    
+    connection.query(query, (error, resultado) => {
+        if (error) return console.log(error.message);
+        const obj = {};
+        if (resultado.length > 0) {
+            obj.listaEmails = resultado;
+            res.json(obj);
+        } else {
+            res.json('No hay correos electrónicos para este usuario');
+        }
+    });
+});
+
 
 app.get('/hora', (req, res) => {
     const query = `SELECT * FROM dbosomens.Horario`;
